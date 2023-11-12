@@ -174,10 +174,10 @@ int main(void)
     uint8_t *block2 = circ_cont_buf_alloc(cbuf, 18);
 
     // 4. At that moment if we call the function circ_cont_buf_peek, it returns the pointer to the first(head) buffer 12B (red buffer).
-    uint8_t * peek = NULL;
+    uint8_t *peek = NULL;
     circ_cont_buf_peek(cbuf, &peek);
 
-    if(peek == cbuf->buffer)
+    if (peek == cbuf->buffer)
     {
         printf("PASS. peek == cbuf->buffer\n");
     }
@@ -191,10 +191,10 @@ int main(void)
     circ_cont_buf_free(cbuf);
 
     // 6. If we call the function circ_cont_buf_peek again, then it returns the pointer to the green buffer 18B.
-    uint8_t * peek2 = NULL;
+    uint8_t *peek2 = NULL;
     circ_cont_buf_peek(cbuf, &peek2);
 
-    if(peek2 == cbuf->buffer)
+    if (peek2 == cbuf->buffer)
     {
         printf("FAIL. The first (head) is at the loc of cbuf->buffer\n");
     }
@@ -207,7 +207,7 @@ int main(void)
     // 7. Another allocations will reserve more blocks using free space in the buffer. If there is no space, then the function circ_cont_buf_alloc returns error.
     uint8_t *block3 = circ_cont_buf_alloc(cbuf, 1000);
 
-    if(block3)
+    if (block3)
     {
         printf("FAIL. 1000B alloc should not have been successful.\n");
     }
