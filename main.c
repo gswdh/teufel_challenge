@@ -62,8 +62,10 @@ uint8_t *circ_cont_buf_alloc(struct cont_buf_handler *cbuf, size_t len)
             current = current->next;
         }
 
-        // Check to see capacity
-        size_t len_free = cbuf->buffer_size - (current->end - cbuf->buffer);
+        // Check to see capacity with wrap
+        size_t len_free = cbuf->buffer_size -
+                          (size_t)(current->end - cbuf->buffer) + 
+                          (size_t)(cbuf->first->start - cbuf->buffer) - 1;
 
         // Not enough
         if (len_free < len)
@@ -75,8 +77,8 @@ uint8_t *circ_cont_buf_alloc(struct cont_buf_handler *cbuf, size_t len)
         struct meta *next = (struct meta *)malloc(sizeof(struct meta));
         current->next = next;
         next->next = NULL;
-        next->start = current->end + 1;
-        next->end = next->start + len;
+        next->start = current->end;
+        next->end = (((next->start - cbuf->buffer) + len) % cbuf->buffer_size) + cbuf->buffer;
 
         // And return the right spot in the buffer
         return next->start;
@@ -168,10 +170,10 @@ int main(void)
     struct cont_buf_handler *cbuf = circ_cont_buf_init(buffer, 512, 8);
 
     // 2. Allocate 12Bytes of contiguous memory (call the function circ_cont_buf_alloc)
-    uint8_t *block1 = circ_cont_buf_alloc(cbuf, 12);
+    uint8_t *block1 = circ_cont_buf_alloc(cbuf, 200);
 
     // 3. Allocate another 18Bytes (call the function circ_cont_buf_alloc)
-    uint8_t *block2 = circ_cont_buf_alloc(cbuf, 18);
+    uint8_t *block2 = circ_cont_buf_alloc(cbuf, 200);
 
     // 4. At that moment if we call the function circ_cont_buf_peek, it returns the pointer to the first(head) buffer 12B (red buffer).
     uint8_t *peek = NULL;
